@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
+	"regexp"
 )
 
 // Define color object
@@ -17,45 +17,60 @@ type Color struct {
 const Escape = "\x1b"
 
 const(
-	Reset = iota
-	Bold
-	Faint
-	Italic
-	Underline
-	BlinkSlow
-	BlinkRapid
-	ReverseVideo
-	Concealed
-	CrossedOut
+	black int = iota
+	red
+	green
+	yellow
+	blue
+	magenta
+	cyan
+	white
+	none = 9
 )
 
-const(
-	FgBlack int = iota + 30
-	FgRed
-	FgGreen
-	FgYellow
-	FgBlue
-	FgMagenta
-	FgCyan
-	FgWhite
-)
+var colorOutput io.Writer = os.Stdout
 
-const(
-	BgBlack int = iota + 40
-	BgRed
-	BgGreen
-	BgYellow
-	BgBlue
-	BgMagenta
-	BgCyan
-	BgWhite
-)
+var BgColors = map[string]int{
+	"black": black + 40,
+	"red": red + 40,
+	"green": green + 40,
+	"yellow": yellow + 40,
+	"blue": blue + 40,
+	"magenta": magenta + 40,
+	"cyan": cyan + 40,
+	"white": white + 40,
+}
 
-var output io.Writer = os.Stdout
+var FgColors = map[string]int{
+	"black": black + 30,
+	"red": red + 30,
+	"green": green + 30,
+	"yellow": yellow + 30,
+	"blue": blue + 30,
+	"magenta": magenta + 30,
+	"cyan": cyan + 30,
+	"white": white + 30,
+}
 
-func New(value ...int) *Color {
+var Style = map[string]int {
+	"reset": 0,
+	"bold": 1,
+	"faint": 2,
+	"italic": 3,
+	"underline": 4,
+	"blinkslow": 5,
+	"blinkrapid": 6,
+	"reverse": 7,
+	"conceal": 8,
+	"crossedout": 9,
+}
+
+func New(value ...string) *Color {
 	c := &Color{params: make([]int, 0)}
-	c.add(value...)
+	for _, v := range value {
+		c.add(ColorCode(v))
+	}
+
 	return c
 }
 
@@ -65,12 +80,12 @@ func (c *Color) add(value ...int) *Color {
 }
 
 func (c *Color) set() *Color {
-	fmt.Fprintf(output, c.format())
+	fmt.Fprintf(colorOutput, c.format())
 	return c
 }
 
 func (c *Color) unset() *Color {
-	fmt.Fprintf(output, "%s[%dm", Escape, Reset)
+	fmt.Fprintf(colorOutput, "%s[%dm", Escape, Style["reset"])
 	return c
 }
 
@@ -88,23 +103,58 @@ func (c *Color) format() string {
 }
 
 func (c *Color) unformat() string {
-	return fmt.Sprintf("%s[%dm", Escape, Reset)
+	return fmt.Sprintf("%s[%dm", Escape, Style["reset"])
 }
 
 func (c *Color) Print(attr ...interface{}) (n int, err error) {
 	c.set()
 	defer c.unset()
-	return fmt.Fprint(output, attr...)
+	return fmt.Fprint(colorOutput, attr...)
 }
 
 func (c *Color) Printf(format string, attr... interface{}) (n int, err error) {
 	c.set()
 	defer c.unset()
-	return fmt.Fprintf(output, format, attr...)
+	return fmt.Fprintf(colorOutput, format, attr...)
 }
 
 func (c *Color) Println(attr ...interface{}) (n int, err error) {
 	c.set()
 	defer c.unset()
-	return fmt.Fprintln(output, attr...)
+	return fmt.Fprintln(colorOutput, attr...)
+}
+
+func ColorCode(code string) int {
+	if code == "reset" {
+		return Style["reset"]
+	}
+
+
+	if color := MatchString("^fg(.*)", code); color != "" {
+		return FgColors[color]
+	}
+
+	if val, ok := FgColors[code]; ok {
+		return val
+	}
+
+	if color := MatchString("^bg(.*)", code); color != "" {
+		return BgColors[color]
+	}
+
+	if val, ok := Style[code]; ok {
+		return val
+	}
+
+	return none
+}
+
+func MatchString(regex string, code string) string {
+	r, _ := regexp.Compile(regex)
+	match := r.FindStringSubmatch(code)
+	if len(match) != 0 {
+		return match[1]
+	}
+
+	return ""
 }

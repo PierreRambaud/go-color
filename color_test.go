@@ -6,49 +6,50 @@ import(
 	"testing"
 )
 
-func TestColor(t *testing.T) {
+func TestFgBgColor(t *testing.T) {
 	rb := new(bytes.Buffer)
-	output = rb
+	colorOutput = rb
 
 	testColors := []struct {
 		text string
 		code int
+		style string
 	}{
-		{text: "foreground black", code: FgBlack},
-		{text: "foreground red", code: FgRed},
-		{text: "foreground green", code: FgGreen},
-		{text: "foreground yellow", code: FgYellow},
-		{text: "foreground blue", code: FgBlue},
-		{text: "foreground magenta", code: FgMagenta},
-		{text: "foreground white", code: FgWhite},
-		{text: "background black", code: BgBlack},
-		{text: "background red", code: BgRed},
-		{text: "background green", code: BgGreen},
-		{text: "background yellow", code: BgYellow},
-		{text: "background blue", code: BgBlue},
-		{text: "background magenta", code: BgMagenta},
-		{text: "background white", code: BgWhite},
-		{text: "bold", code: Bold},
-		{text: "faint", code: Faint},
-		{text: "italic", code: Italic},
-		{text: "underline", code: Underline},
-		{text: "blink slow", code: BlinkSlow},
-		{text: "blink rapid", code: BlinkRapid},
-		{text: "reverse video", code: ReverseVideo},
-		{text: "concealed", code: Concealed},
-		{text: "crossed out", code: CrossedOut},
+		{text: "foreground black", style: "fgblack", code: FgColors["black"]},
+		{text: "foreground red", style: "fgred", code: FgColors["red"]},
+		{text: "foreground green", style: "fggreen", code: FgColors["green"]},
+		{text: "foreground yellow", style: "fgyellow", code: FgColors["yellow"]},
+		{text: "foreground blue", style: "fgblue", code: FgColors["blue"]},
+		{text: "foreground magenta", style: "fgmagenta", code: FgColors["magenta"]},
+		{text: "foreground white", style: "fgwhite", code: FgColors["white"]},
+		{text: "background black", style: "bgblack", code: BgColors["black"]},
+		{text: "background red", style: "bgred", code: BgColors["red"]},
+		{text: "background green", style: "bggreen", code: BgColors["green"]},
+		{text: "background yellow", style: "bgyellow", code: BgColors["yellow"]},
+		{text: "background blue", style: "bgblue", code: BgColors["blue"]},
+		{text: "background magenta", style: "bgmagenta", code: BgColors["magenta"]},
+		{text: "background white", style: "bgwhite", code: BgColors["white"]},
+		{text: "bold", style: "bold", code: Style["bold"]},
+		{text: "faint", style: "faint", code: Style["faint"]},
+		{text: "italic", style: "italic", code: Style["italic"]},
+		{text: "underline", style: "underline", code: Style["underline"]},
+		{text: "blink slow", style: "blinkslow", code: Style["blinkslow"]},
+		{text: "blink rapid", style: "blinkrapid", code: Style["blinkrapid"]},
+		{text: "reverse", style: "reverse", code: Style["reverse"]},
+		{text: "conceal", style: "conceal", code: Style["conceal"]},
+		{text: "crossed out", style: "crossedout", code: Style["crossedout"]},
 	}
 
 	for _, c := range testColors {
-		New(c.code).Print(c.text)
+		New(c.style).Print(c.text)
 
 		line, _ := rb.ReadString('\n')
-		scannedLine := fmt.Sprintf("%q", line)
+		returnLine := fmt.Sprintf("%q", line)
 		colored := fmt.Sprintf("\x1b[%dm%s\x1b[0m", c.code, c.text)
 		expectLine := fmt.Sprintf("%q", colored)
-		fmt.Printf("%s\t: %s\n", c.text, line)
-		if scannedLine != expectLine {
-			t.Errorf("Expecting %s, got '%s'\n", expectLine, scannedLine)
+		fmt.Printf("%s  \t: %s\n", c.text, line)
+		if returnLine != expectLine {
+			t.Errorf("Expecting %s, got '%s'\n", expectLine, returnLine)
 		}
 	}
 }
