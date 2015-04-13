@@ -1,13 +1,12 @@
 package main
 
 import(
-	"../"
+	"github.com/PierreRambaud/go-color"
 	"strings"
 )
 
 func main() {
 	color.New("fgcyan", "bgcyan", "underline").Println("something")
-
 	color.New("fgred", "bold").Println("something")
 
 	for fgk, _ := range color.FgColors {
