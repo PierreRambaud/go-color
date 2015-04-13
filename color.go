@@ -25,7 +25,6 @@ const(
 	magenta
 	cyan
 	white
-	none = 9
 )
 
 var colorOutput io.Writer = os.Stdout
@@ -102,10 +101,6 @@ func (c *Color) format() string {
 	return fmt.Sprintf("%s[%sm", Escape, c.sequence())
 }
 
-func (c *Color) unformat() string {
-	return fmt.Sprintf("%s[%dm", Escape, Style["reset"])
-}
-
 func (c *Color) Print(attr ...interface{}) (n int, err error) {
 	c.set()
 	defer c.unset()
@@ -125,10 +120,9 @@ func (c *Color) Println(attr ...interface{}) (n int, err error) {
 }
 
 func ColorCode(code string) int {
-	if code == "reset" {
-		return Style["reset"]
+	if val, ok := Style[code]; ok {
+		return val
 	}
-
 
 	if color := MatchString("^fg(.*)", code); color != "" {
 		return FgColors[color]
@@ -142,11 +136,7 @@ func ColorCode(code string) int {
 		return BgColors[color]
 	}
 
-	if val, ok := Style[code]; ok {
-		return val
-	}
-
-	return none
+	return 0
 }
 
 func MatchString(regex string, code string) string {

@@ -6,7 +6,7 @@ import(
 	"testing"
 )
 
-func TestFgBgColor(t *testing.T) {
+func TestColor(t *testing.T) {
 	rb := new(bytes.Buffer)
 	colorOutput = rb
 
@@ -42,14 +42,25 @@ func TestFgBgColor(t *testing.T) {
 
 	for _, c := range testColors {
 		New(c.style).Print(c.text)
-
-		line, _ := rb.ReadString('\n')
-		returnLine := fmt.Sprintf("%q", line)
-		colored := fmt.Sprintf("\x1b[%dm%s\x1b[0m", c.code, c.text)
-		expectLine := fmt.Sprintf("%q", colored)
-		fmt.Printf("%s  \t: %s\n", c.text, line)
-		if returnLine != expectLine {
-			t.Errorf("Expecting %s, got '%s'\n", expectLine, returnLine)
-		}
+		test_return(t, rb, "\x1b[%dm%s\x1b[0m", c.code, c.text)
 	}
+
+	New("red", "underline").Print("red underline")
+	test_return(t, rb, "\x1b[%d;4m%s\x1b[0m", 31, "red underline")
+
+	New("nothing").Print("nothing")
+	test_return(t, rb, "\x1b[%dm%s\x1b[0m", 0, "nothing")
+}
+
+func test_return(t *testing.T, rb *bytes.Buffer, format string, code int, text string) bool {
+	line, _ := rb.ReadString('\n')
+	returnLine := fmt.Sprintf("%q", line)
+	colored := fmt.Sprintf(format, code, text)
+	expectLine := fmt.Sprintf("%q", colored)
+	fmt.Printf("%s  \t: %s\n", text, line)
+	if returnLine != expectLine {
+		t.Errorf("Expecting %s, got '%s'\n", expectLine, returnLine)
+	}
+
+	return true
 }

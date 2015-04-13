@@ -1,3 +1,4 @@
 .project
 coverage
 coverage.out
+coverage.html
