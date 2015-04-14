@@ -20,12 +20,20 @@ color.New("red", "underline").Print("This is a red message with an underline.")
 success := color.New("green").Add("bold")
 success.Print("Great!")
 success.Printf("This is %s", "SPARTA")
+
+
+// Reusable functions
+// Func expects as parameter to be a valid method from
+// the Color struct.
+
+error := color.New("red").Func("Print")
+error("Error during process..")
+error("Can connect..")
+
+info := color.New("yellow").Func("Println")
+info("Be careful")
+info("Something happened, but nobody cares.")
 ```
-
-## TODO
-
-- Reusable functions
-
 
 ## License
 

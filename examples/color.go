@@ -17,6 +17,14 @@ func main() {
 	success.Printf("This is %s", "SPARTA")
 	println("")
 
+	error := color.New("red").Func("Print")
+	error("Error during process..")
+	error("Can connect..")
+
+	info := color.New("yellow").Func("Println")
+	info("Be careful")
+	info("Something happened, but nobody cares.")
+
 	for fgk, _ := range color.FgColors {
 		for bgk, _ := range color.BgColors {
 			color.New(fgk, strings.Join([]string{"bg", bgk}, "")).Print(strings.Join([]string{fgk, bgk}, " "))

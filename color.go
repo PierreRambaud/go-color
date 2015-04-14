@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"reflect"
 	"regexp"
 )
 
@@ -120,6 +121,17 @@ func (c *Color) Println(attr ...interface{}) (n int, err error) {
 	c.Set()
 	defer c.Unset()
 	return fmt.Fprintln(colorOutput, attr...)
+}
+
+func (c *Color) Func(method string) func(args ...interface{}) {
+	return func(args ...interface{}) {
+		inputs := make([]reflect.Value, len(args))
+		for i, _ := range args {
+			inputs[i] = reflect.ValueOf(args[i])
+		}
+
+		reflect.ValueOf(c).MethodByName(method).Call(inputs)
+	}
 }
 
 func ColorCode(code string) int {

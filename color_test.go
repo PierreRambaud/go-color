@@ -46,10 +46,14 @@ func TestColor(t *testing.T) {
 	}
 
 	New("red", "underline").Print("red underline")
-	test_return(t, rb, "\x1b[%d;4m%s\x1b[0m", 31, "red underline")
+	test_return(t, rb, "\x1b[%d;4m%s\x1b[0m", FgColors["red"], "red underline")
 
 	New("nothing").Print("nothing")
 	test_return(t, rb, "\x1b[%dm%s\x1b[0m", 0, "nothing")
+
+	success := New("green").Func("Print")
+	success("Oh YEAH!")
+	test_return(t, rb, "\x1b[%dm%s\x1b[0m", FgColors["green"], "Oh YEAH!")
 }
 
 func test_return(t *testing.T, rb *bytes.Buffer, format string, code int, text string) bool {
