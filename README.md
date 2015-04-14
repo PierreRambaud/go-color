@@ -11,7 +11,7 @@ go install github.com/PierreRambaud/go-color
 
 ## Examples
 
-```
+```go
 // Default usage
 color.New("green").Print("This is a green message.")
 color.New("red", "underline").Print("This is a red message with an underline.")
