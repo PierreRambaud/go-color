@@ -8,3 +8,25 @@ Color your console in Golang.
 ```
 go install github.com/PierreRambaud/go-color
 ```
+
+## Examples
+
+```
+// Default usage
+color.New("green").Print("This is a green message.")
+color.New("red", "underline").Print("This is a red message with an underline.")
+
+// Reuse color
+success := color.New("green").add("bold")
+success.Print("Great!")
+success.Printf("This is %s", "SPARTA")
+```
+
+## TODO
+
+- Reusable functions
+
+
+## License
+
+see [LICENSE.md](LICENSE.md) for more details
