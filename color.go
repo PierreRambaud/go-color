@@ -67,28 +67,31 @@ var Style = map[string]int {
 func New(value ...string) *Color {
 	c := &Color{params: make([]int, 0)}
 	for _, v := range value {
-		c.add(ColorCode(v))
+		c.Add(v)
 	}
 
 	return c
 }
 
-func (c *Color) add(value ...int) *Color {
-	c.params = append(c.params, value...)
+func (c *Color) Add(value ...string) *Color {
+	for _, v := range value {
+		c.params = append(c.params, ColorCode(v))
+	}
+
 	return c
 }
 
-func (c *Color) set() *Color {
-	fmt.Fprintf(colorOutput, c.format())
+func (c *Color) Set() *Color {
+	fmt.Fprintf(colorOutput, c.Format())
 	return c
 }
 
-func (c *Color) unset() *Color {
+func (c *Color) Unset() *Color {
 	fmt.Fprintf(colorOutput, "%s[%dm", Escape, Style["reset"])
 	return c
 }
 
-func (c *Color) sequence() string {
+func (c *Color) Sequence() string {
 	format := make([]string, len(c.params))
 	for k, v := range c.params {
 		format[k] = strconv.Itoa(int(v))
@@ -97,25 +100,25 @@ func (c *Color) sequence() string {
 	return strings.Join(format, ";")
 }
 
-func (c *Color) format() string {
-	return fmt.Sprintf("%s[%sm", Escape, c.sequence())
+func (c *Color) Format() string {
+	return fmt.Sprintf("%s[%sm", Escape, c.Sequence())
 }
 
 func (c *Color) Print(attr ...interface{}) (n int, err error) {
-	c.set()
-	defer c.unset()
+	c.Set()
+	defer c.Unset()
 	return fmt.Fprint(colorOutput, attr...)
 }
 
 func (c *Color) Printf(format string, attr... interface{}) (n int, err error) {
-	c.set()
-	defer c.unset()
+	c.Set()
+	defer c.Unset()
 	return fmt.Fprintf(colorOutput, format, attr...)
 }
 
 func (c *Color) Println(attr ...interface{}) (n int, err error) {
-	c.set()
-	defer c.unset()
+	c.Set()
+	defer c.Unset()
 	return fmt.Fprintln(colorOutput, attr...)
 }
 

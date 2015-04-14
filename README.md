@@ -17,7 +17,7 @@ color.New("green").Print("This is a green message.")
 color.New("red", "underline").Print("This is a red message with an underline.")
 
 // Reuse color
-success := color.New("green").add("bold")
+success := color.New("green").Add("bold")
 success.Print("Great!")
 success.Printf("This is %s", "SPARTA")
 ```
