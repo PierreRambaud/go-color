@@ -1,8 +1,7 @@
 package main
 
 import(
-	// "github.com/PierreRambaud/go-color"
-	"../"
+	"github.com/PierreRambaud/go-color"
 	"strings"
 )
 
